@@ -3,7 +3,7 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import { useElementResize } from 'src/hooks';
 import styled from 'styled-components';
 
-function Windows({
+const Windows = React.memo(function({
   apps,
   onMouseDown,
   onClose,
@@ -22,14 +22,35 @@ function Windows({
       onMouseUpMaximize={onMaximize}
       isFocus={focusedAppId === app.id}
       {...app}
-    >
-      <app.component onClose={onClose.bind(null, app.id)} />
-    </StyledWindow>
+    />
   ));
-}
+});
+// function Windows({
+//   apps,
+//   onMouseDown,
+//   onClose,
+//   onMinimize,
+//   onMaximize,
+//   focusedAppId,
+// }) {
+//   return apps.map(app => (
+//     <StyledWindow
+//       show={!app.minimized}
+//       key={app.id}
+//       id={app.id}
+//       onMouseDown={onMouseDown}
+//       onMouseUpClose={onClose}
+//       onMouseUpMinimize={onMinimize}
+//       onMouseUpMaximize={onMaximize}
+//       isFocus={focusedAppId === app.id}
+//       {...app}
+//     >
+//       <app.component onClose={onClose.bind(null, app.id)} />
+//     </StyledWindow>
+//   ));
+// }
 
 function Window({
-  children,
   id,
   onMouseDown,
   onMouseUpClose,
@@ -42,6 +63,7 @@ function Window({
   headerIcon,
   maximized,
   className,
+  component,
 }) {
   function _onMouseDown() {
     onMouseDown(id);
@@ -112,7 +134,9 @@ function Window({
           <button className="app__header__close" onMouseUp={_onMouseUpClose} />
         </div>
       </header>
-      <div className="app__content">{children}</div>
+      <div className="app__content">
+        {component({ onClose: _onMouseUpClose })}
+      </div>
     </div>
   );
 }

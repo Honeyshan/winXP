@@ -158,31 +158,59 @@ function WinXP() {
   const [state, dispatch] = useReducer(reducer, initState);
   const ref = useRef(null);
   const mouse = useMouse(ref);
-  function onFocusApp(id) {
+  const focusedAppId = getFocusedAppId();
+  // function onFocusApp(id) {
+  //   dispatch({ type: FOCUS_APP, payload: id });
+  // }
+  const onFocusApp = React.useCallback(id => {
     dispatch({ type: FOCUS_APP, payload: id });
-  }
-  function onMaximizeWindow(id) {
-    if (getFocusedAppId() === id && state.focusing === FOCUSING.WINDOW) {
-      dispatch({ type: TOGGLE_MAXIMIZE_APP, payload: id });
-    }
-  }
-  function onMinimizeWindow(id) {
-    if (getFocusedAppId() === id && state.focusing === FOCUSING.WINDOW) {
-      dispatch({ type: MINIMIZE_APP, payload: id });
-    }
-  }
+  }, []);
+  const onMaximizeWindow = React.useCallback(
+    id => {
+      if (focusedAppId === id && state.focusing === FOCUSING.WINDOW) {
+        dispatch({ type: TOGGLE_MAXIMIZE_APP, payload: id });
+      }
+    },
+    [focusedAppId],
+  );
+  // function onMaximizeWindow(id) {
+  //   if (focusedAppId === id && state.focusing === FOCUSING.WINDOW) {
+  //     dispatch({ type: TOGGLE_MAXIMIZE_APP, payload: id });
+  //   }
+  // }
+  const onMinimizeWindow = React.useCallback(
+    id => {
+      if (focusedAppId === id && state.focusing === FOCUSING.WINDOW) {
+        dispatch({ type: MINIMIZE_APP, payload: id });
+      }
+    },
+    [focusedAppId],
+  );
+  // function onMinimizeWindow(id) {
+  //   if (focusedAppId === id && state.focusing === FOCUSING.WINDOW) {
+  //     dispatch({ type: MINIMIZE_APP, payload: id });
+  //   }
+  // }
   function onMouseDownFooterApp(id) {
-    if (getFocusedAppId() === id) {
+    if (focusedAppId === id) {
       dispatch({ type: MINIMIZE_APP, payload: id });
     } else {
       dispatch({ type: FOCUS_APP, payload: id });
     }
   }
-  function onCloseApp(id) {
-    if (getFocusedAppId() === id && state.focusing === FOCUSING.WINDOW) {
-      dispatch({ type: DEL_APP, payload: id });
-    }
-  }
+  // function onCloseApp(id) {
+  //   if (getFocusedAppId() === id && state.focusing === FOCUSING.WINDOW) {
+  //     dispatch({ type: DEL_APP, payload: id });
+  //   }
+  // }
+  const onCloseApp = React.useCallback(
+    id => {
+      if (focusedAppId === id && state.focusing === FOCUSING.WINDOW) {
+        dispatch({ type: DEL_APP, payload: id });
+      }
+    },
+    [focusedAppId],
+  );
   function onMouseDownIcon(id) {
     dispatch({ type: FOCUS_ICON, payload: id });
   }
@@ -236,7 +264,6 @@ function WinXP() {
   function onModalClose() {
     dispatch({ type: CANCEL_POWER_OFF });
   }
-  const focusedAppId = getFocusedAppId();
   return (
     <Container
       ref={ref}
